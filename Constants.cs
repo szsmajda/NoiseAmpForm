@@ -7,7 +7,7 @@ namespace NoiseAmpControlApp
         public const string AudioFile = "test.wav";
 
         public const int BaudRate = 38400;
-        public const string PortName = "COM10";
+        public const string PortName = "COM1";
         public const int UdpClientPort = 9;
         public const int UdpEndPointPort = 9;
         public const int UdpCh1Port = 23410;
