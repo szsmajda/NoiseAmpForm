@@ -20,7 +20,7 @@ namespace NoiseAmpControlApp
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
             _udpClient = new UdpClient(Constants.UdpCh1Port);
-            _udpService = new UdpService(Constants.UdpClientPort, _udpClient);
+            _udpService = new UdpService();
             _serialPortService = new SerialPortService();
             Form = this;
             _serialPortService.Start();
