@@ -11,12 +11,12 @@ namespace NoiseAmpControlApp
         public const int UdpClientPort = 9;
         public const int UdpEndPointPort = 9;
         public const int UdpCh1Port = 23410;
-        public const string UdpEndPointAddress = "192.168.1.180";
+        public const string UdpEndPointAddress = "192.168.1.179";
 
-        public const UInt16 Noise1Cycle = 10;
-        public const UInt16 Noise2Cycle = 10;
-        public const UInt16 Noise3Cycle = 10;
-        public const UInt16 Noise4Cycle = 10;
+        public const UInt16 Noise1Cycle = 2;
+        public const UInt16 Noise2Cycle = 2;
+        public const UInt16 Noise3Cycle = 2;
+        public const UInt16 Noise4Cycle = 2;
 
         public const bool N1IsEnable = true;
         public const bool N2IsEnable = true;
@@ -26,11 +26,15 @@ namespace NoiseAmpControlApp
         public const int MaxChr = 4;
         public const int MaxBytes = 23;
 
-        public const string VolumeFix = "TC*31v";
+        
         public const string Ack = "ACK:";
+        //TTT commands
+        public const string Volume1Fix = "TC*31v";
+        public const string Volume2Fix = "TC*30v";
         public const string AllZoneON = "TX8";
-
         public const string AllZoneOFF = "TX0";
+        public const string CommandEOF = ";";
+
 
         public const string KeepAlive = "KEEPALIVE";
 

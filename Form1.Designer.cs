@@ -37,6 +37,7 @@
             // 
             // SpeakOut_button
             // 
+            this.SpeakOut_button.Enabled = false;
             this.SpeakOut_button.Location = new System.Drawing.Point(132, 12);
             this.SpeakOut_button.Name = "SpeakOut_button";
             this.SpeakOut_button.Size = new System.Drawing.Size(114, 23);

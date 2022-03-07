@@ -4,6 +4,10 @@ namespace NoiseAmpControlApp
 {
     public static class NoiseFilter
     {
+        private static UInt32 collector1 = 0;
+        private static UInt32 collector2 = 0;
+        private static UInt32 collector3 = 0;
+        private static UInt32 collector4 = 0;
         private static UInt16 _ch1Value;
         private static UInt16 _ch2Value;
         private static UInt16 _ch3Value;
@@ -13,6 +17,9 @@ namespace NoiseAmpControlApp
         private static UInt16 cyc3 = 0;
         private static UInt16 cyc4 = 0;
         public static byte Vol1;
+        public static byte Vol2;
+        public static byte Vol3;
+        public static byte Vol4;
 
         public static void StartCalculation(byte[] sourceBytes)
         {
@@ -50,20 +57,13 @@ namespace NoiseAmpControlApp
 
         private static void VolumeController()
         {
-            byte vol2;
-            byte vol3;
-            byte vol4;
-            UInt32 collector1 = 0;
-            UInt32 collector2 = 0;
-            UInt32 collector3 = 0;
-            UInt32 collector4 = 0;
-
             if (cyc1 == Constants.Noise1Cycle)
             {
                 collector1 /= cyc1;
                 cyc1 = 0;
                 collector1 /= 16;
-                Vol1 = (byte)(64 - collector1);
+                if (collector1 < 10) { collector1 = 10; }
+                Vol1 = (byte)(63 - collector1);
             }
             else
             {
@@ -75,7 +75,8 @@ namespace NoiseAmpControlApp
                 collector2 /= cyc2;
                 cyc2 = 0;
                 collector2 /= 16;
-                vol2 = (byte)(64 - collector2);
+                if (collector2 < 10) { collector2 = 10; }
+                Vol2 = (byte)(63 - collector2);
             }
             else
             {
@@ -87,7 +88,7 @@ namespace NoiseAmpControlApp
                 collector3 /= cyc3;
                 cyc3 = 0;
                 collector3 /= 16;
-                vol3 = (byte)(64 - collector3);
+                Vol3 = (byte)(63 - collector3);
             }
             else
             {
@@ -99,7 +100,7 @@ namespace NoiseAmpControlApp
                 collector4 /= cyc4;
                 cyc4 = 0;
                 collector4 /= 16;
-                vol4 = (byte)(64 - collector4);
+                Vol4 = (byte)(63 - collector4);
             }
             else
             {

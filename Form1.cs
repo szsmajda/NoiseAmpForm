@@ -22,6 +22,14 @@ namespace NoiseAmpControlApp
             _serialPortService = new SerialPortService();
             Form = this;
             _serialPortService.Start();
+
+            _udpService.SpeakOutEnabled += new UdpService.EnableUI(SpeakOutEnableControl);
+        }
+
+        public void SpeakOutEnableControl(bool buttonEnable)
+        {
+           SpeakOut_button.Enabled = buttonEnable;
+
         }
 
         public void UpdateSerialConsole(string consoleText)

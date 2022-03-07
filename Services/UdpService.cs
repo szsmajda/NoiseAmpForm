@@ -17,6 +17,12 @@ namespace NoiseAmpControlApp.Services
         private readonly UdpClient _udpCh1Client;
         private byte[] _counterBytes;
         private static Stopwatch stopwatch = new Stopwatch();
+
+        public bool KeepaliveButtonisEnabled = false;
+
+        public delegate void EnableUI(bool buttonState);
+        public event EnableUI SpeakOutEnabled;
+
         
         public UdpService()
         {
@@ -139,26 +145,41 @@ namespace NoiseAmpControlApp.Services
             Array.Copy(commandBytes, 0, sendBytes, _counterBytes.Length, commandBytes.Length);
 
             _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
-        }
 
+            while (!ReceivedString.Contains(Constants.Ack));
+            SpeakOutEnabled(true);
+        }
+        
         private void SpeakOut()
         {
+            
+
             SetCounterBytesAndCommandCounter();
 
-            string sendstring = string.Format("{0}{1:D2};", Constants.VolumeFix, NoiseFilter.Vol1);
-            var sendBytes = CreateSendBytes(sendstring);
-            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
-
-            while (!ReceivedString.Contains(Constants.Ack)) ;
-
-            Form1.Form.UpdateOutputConsole($"Received {Constants.Ack}");
-
-            sendBytes = CreateSendBytes(Constants.AllZoneON);
+            var sendBytes = CreateSendBytes(Constants.AllZoneON);
             _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
 
             Form1.Form.UpdateOutputConsole($"Sent {Constants.AllZoneON}");
 
             while (!ReceivedString.Contains(Constants.Ack)) ;
+
+            SetCounterBytesAndCommandCounter();
+
+            string sendstring = string.Format("{0}{1:D2}{2}", Constants.Volume1Fix, NoiseFilter.Vol1, Constants.CommandEOF);
+            sendBytes = CreateSendBytes(sendstring);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+
+            while (!ReceivedString.Contains(Constants.Ack)) ;
+
+            SetCounterBytesAndCommandCounter();
+
+            sendstring = string.Format("{0}{1:D2}{2}", Constants.Volume2Fix, NoiseFilter.Vol2, Constants.CommandEOF);
+            sendBytes = CreateSendBytes(sendstring);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+
+            while (!ReceivedString.Contains(Constants.Ack)) ;
+
+            Form1.Form.UpdateOutputConsole($"Received {Constants.Ack}");
 
             _streamerService.Ch1Play();
             Ch1SendOn();
