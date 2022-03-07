@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace NoiseAmpControlApp.Models
@@ -19,6 +20,11 @@ namespace NoiseAmpControlApp.Models
         public int DefaultTimerpackets { get; set; }
         public long Ch1Timertime { get; set; }
         public long DefaultTimertime { get; set; }
+
+        public byte Ch1StreamStatus;
+        public byte Ch1BuffStatus;
+
+        public BitArray Ch1ChStats;
 
         public bool Ch1Needtoplay { get; set; }
         public bool Ch1Filended { get; set; }

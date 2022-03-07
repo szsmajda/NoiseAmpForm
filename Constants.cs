@@ -38,7 +38,7 @@ namespace NoiseAmpControlApp
 
         public const string Stream1Off = "C00";
 
-        public const string MyIP = "192.168.1.87:";
+        public const string MyIP = "192.168.1.174:";
         public const string Stream1Port = "23410";
         public const string Stream2Port = "23420";
 

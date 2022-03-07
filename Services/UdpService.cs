@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows.Forms;
 
 namespace NoiseAmpControlApp.Services
 {
@@ -24,10 +26,11 @@ namespace NoiseAmpControlApp.Services
             _udpCh1Client = new UdpClient(Constants.UdpCh1Port);
             _streamerService.NeedToPlayReached += Ch1SendPackage;
             _streamerService.StopItReached += Ch1SendOff;
-            _udpCtrlClient.BeginReceive(UdpReceive, null);
+            _udpCtrlClient.BeginReceive(UdpCtrlReceive, null);
+            _udpCh1Client.BeginReceive(OnCH1_UDPReceive, null);
         }
 
-        private void UdpReceive(IAsyncResult res)
+        private void UdpCtrlReceive(IAsyncResult res)
         {
             if (_udpCtrlClient != null)
             {
@@ -35,7 +38,74 @@ namespace NoiseAmpControlApp.Services
                 ReceivedString = Encoding.ASCII.GetString(receivedUdpbytes);
             }
 
-            _udpCtrlClient.BeginReceive(new AsyncCallback(UdpReceive), null);
+            _udpCtrlClient.BeginReceive(new AsyncCallback(UdpCtrlReceive), null);
+        }
+
+        private void OnCH1_UDPReceive(IAsyncResult res)
+        {
+            try
+            {
+                IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);
+                if (_udpCh1Client != null)
+                {
+                    byte[] data = _udpCh1Client.EndReceive(res, ref remote);
+                    byte[] ch1_header = new byte[2];
+                    Array.Copy(data, 0, ch1_header, 0, ch1_header.Length);
+                    if (ch1_header[0] != _streamerService.Model.Ch1StreamStatus)
+                    {
+                        _streamerService.Model.Ch1StreamStatus = ch1_header[0];
+
+                        if ((byte)(_streamerService.Model.Ch1StreamStatus & 0x07) != _streamerService.Model.Ch1BuffStatus)
+                        {
+                            _streamerService.Model.Ch1BuffStatus = (byte)(_streamerService.Model.Ch1StreamStatus & 0x07);
+                            //
+                            //CH1_marshalledStatusUpdate(Enum.GetName(typeof(buff_stats), _streamerService.Model.Ch1BuffStatus));
+
+                            switch (_streamerService.Model.Ch1BuffStatus)
+                            {
+                                case (byte)buff_stats.OK:
+                                    _streamerService.Model.Ch1Timerpackets = _streamerService.Model.DefaultTimerpackets;
+                                    break;
+                                case (byte)buff_stats.OL1:
+                                    _streamerService.Model.Ch1Timerpackets = 2;
+                                    break;
+                                case (byte)buff_stats.OL2:
+                                    _streamerService.Model.Ch1Timerpackets = 1;
+                                    break;
+                                case (byte)buff_stats.OL3:
+                                    _streamerService.Model.Ch1Timerpackets = 1;
+                                    break;
+                                case (byte)buff_stats.UL1:
+                                    _streamerService.Model.Ch1Timerpackets = 4;
+                                    break;
+                                case (byte)buff_stats.UL2:
+                                    _streamerService.Model.Ch1Timerpackets = 6;
+                                    break;
+                                case (byte)buff_stats.UL3:
+                                    _streamerService.Model.Ch1Timerpackets = 8;
+                                    break;
+                            }
+                        }
+
+                        
+
+                    }
+                    
+
+                    //string msg = Encoding.ASCII.GetString(data);
+
+                    
+                    //CH1_marshalledAddNewMessage(msg);
+
+                    // do something with data received from remote
+                    _udpCh1Client.BeginReceive(OnCH1_UDPReceive, null);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Itt valami hiba lett: " + ex);
+            }
         }
 
         public new void Send(SendTypes sendTypes)
@@ -133,12 +203,6 @@ namespace NoiseAmpControlApp.Services
 
         public void Ch1SendPackage(object sender = null, EventArgs e = null)
         {
-            if (!stopwatch.IsRunning)
-            {
-                stopwatch.Start();
-            }
-            Debug.WriteLine($"Timer: {stopwatch.ElapsedMilliseconds.ToString()}");
-
             byte[] sendBytes;
             _streamerService.Model.Ch1SendDatagram.Clear();
             for (int z = 0; z < 4; z++) _streamerService.Model.Ch1SendDatagram.AddRange(BitConverter.GetBytes((ushort)0));
@@ -170,8 +234,6 @@ namespace NoiseAmpControlApp.Services
                 Ch1SendOff();
                 _streamerService.Model.Ch1Needtoplay = false;
             }
-
-            stopwatch.Restart();
         }
         private void SetCounterBytesAndCommandCounter()
         {
