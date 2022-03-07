@@ -16,10 +16,14 @@ namespace NoiseAmpControlApp
         private static UInt16 cyc2 = 0;
         private static UInt16 cyc3 = 0;
         private static UInt16 cyc4 = 0;
-        public static byte Vol1;
-        public static byte Vol2;
-        public static byte Vol3;
-        public static byte Vol4;
+        private static UInt16 _noise1Avg;
+        private static UInt16 _noise2Avg;
+        private static UInt16 _noise3Avg;
+        private static UInt16 _noise4Avg;
+        public static byte Ch1Volume;
+        public static byte Ch2Volume;
+        public static byte Ch3Volume;
+        public static byte Ch4Volume;
 
         public static void StartCalculation(byte[] sourceBytes)
         {
@@ -60,10 +64,25 @@ namespace NoiseAmpControlApp
             if (cyc1 == Constants.Noise1Cycle)
             {
                 collector1 /= cyc1;
+                _noise1Avg = (UInt16)collector1;
                 cyc1 = 0;
-                collector1 /= 16;
-                if (collector1 < 10) { collector1 = 10; }
-                Vol1 = (byte)(63 - collector1);
+                collector1 = 0;
+                if(_noise1Avg < Constants.MinimumNoiseValue)
+                {
+                    Ch1Volume = Constants.MinimumVolumeValue;
+                }
+                else if(_noise1Avg > Constants.MaximumNoiseValue)
+                {
+                    Ch1Volume = Constants.MaximumVolumeValue;
+                }
+                else
+                {
+                    Ch1Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise1Avg / 20));
+                }
+                //collector1 /= 20;
+                //if (collector1 < 10) { collector1 = 10; }
+                //Ch1Volume = (byte)(63 - collector1);
+                
             }
             else
             {
@@ -73,10 +92,21 @@ namespace NoiseAmpControlApp
             if (cyc2 == Constants.Noise2Cycle)
             {
                 collector2 /= cyc2;
+                _noise2Avg = (UInt16)collector2;
                 cyc2 = 0;
-                collector2 /= 16;
-                if (collector2 < 10) { collector2 = 10; }
-                Vol2 = (byte)(63 - collector2);
+                collector2 = 0;
+                if (_noise2Avg < Constants.MinimumNoiseValue)
+                {
+                    Ch2Volume = Constants.MinimumVolumeValue;
+                }
+                else if (_noise2Avg > Constants.MaximumNoiseValue)
+                {
+                    Ch2Volume = Constants.MaximumVolumeValue;
+                }
+                else
+                {
+                    Ch2Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise2Avg / 20));
+                }
             }
             else
             {
@@ -86,9 +116,21 @@ namespace NoiseAmpControlApp
             if (cyc3 == Constants.Noise3Cycle)
             {
                 collector3 /= cyc3;
+                _noise3Avg = (UInt16)collector3;
                 cyc3 = 0;
-                collector3 /= 16;
-                Vol3 = (byte)(63 - collector3);
+                collector3 = 0;
+                if (_noise3Avg < Constants.MinimumNoiseValue)
+                {
+                    Ch3Volume = Constants.MinimumVolumeValue;
+                }
+                else if (_noise3Avg > Constants.MaximumNoiseValue)
+                {
+                    Ch3Volume = Constants.MaximumVolumeValue;
+                }
+                else
+                {
+                    Ch3Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise3Avg / 20));
+                }
             }
             else
             {
@@ -98,9 +140,21 @@ namespace NoiseAmpControlApp
             if (cyc4 == Constants.Noise4Cycle)
             {
                 collector4 /= cyc4;
+                _noise4Avg = (UInt16)collector4;
                 cyc4 = 0;
-                collector4 /= 16;
-                Vol4 = (byte)(63 - collector4);
+                collector4 = 0;
+                if (_noise4Avg < Constants.MinimumNoiseValue)
+                {
+                    Ch4Volume = Constants.MinimumVolumeValue;
+                }
+                else if (_noise4Avg > Constants.MaximumNoiseValue)
+                {
+                    Ch4Volume = Constants.MaximumVolumeValue;
+                }
+                else
+                {
+                    Ch4Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise4Avg / 20));
+                }
             }
             else
             {

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace NoiseAmpControlApp.Services
 {
@@ -163,7 +164,7 @@ namespace NoiseAmpControlApp.Services
 
             SetCounterBytesAndCommandCounter();
 
-            string sendstring = string.Format("{0}{1:D2}{2}", Constants.Volume1Fix, NoiseFilter.Vol1, Constants.CommandEOF);
+            string sendstring = string.Format("{0}{1:D2}{2}", Constants.Volume1Fix, NoiseFilter.Ch1Volume, Constants.CommandEOF);
             sendBytes = CreateSendBytes(sendstring);
             _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
 
@@ -173,7 +174,7 @@ namespace NoiseAmpControlApp.Services
 
             SetCounterBytesAndCommandCounter();
 
-            sendstring = string.Format("{0}{1:D2}{2}", Constants.Volume2Fix, NoiseFilter.Vol2, Constants.CommandEOF);
+            sendstring = string.Format("{0}{1:D2}{2}", Constants.Volume2Fix, NoiseFilter.Ch2Volume, Constants.CommandEOF);
             sendBytes = CreateSendBytes(sendstring);
             _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
 
@@ -182,6 +183,8 @@ namespace NoiseAmpControlApp.Services
             while (!ReceivedString.Contains(Constants.Ack)) ;
 
             Form1.Form.UpdateOutputConsole($"Received {Constants.Ack}");
+
+            Thread.Sleep(1000);
 
             _streamerService.Ch1Play();
             Ch1SendOn();

@@ -18,10 +18,15 @@ namespace NoiseAmpControlApp
         public const UInt16 Noise3Cycle = 2;
         public const UInt16 Noise4Cycle = 2;
 
-        public const bool N1IsEnable = true;
-        public const bool N2IsEnable = true;
-        public const bool N3IsEnable = false;
-        public const bool N4IsEnable = false;
+        public const Int16 Noise1Offset = 0;
+        public const Int16 Noise2Offset = 0;
+        public const Int16 Noise3Offset = 0;
+        public const Int16 Noise4Offset = 0;
+
+        public const UInt16 MinimumNoiseValue = 5;
+        public const UInt16 MaximumNoiseValue = 1000;
+        public const byte MinimumVolumeValue = 50;
+        public const byte MaximumVolumeValue = 1;
 
         public const int MaxChr = 4;
         public const int MaxBytes = 23;
