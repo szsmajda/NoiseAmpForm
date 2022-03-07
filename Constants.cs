@@ -11,7 +11,7 @@ namespace NoiseAmpControlApp
         public const int UdpClientPort = 9;
         public const int UdpEndPointPort = 9;
         public const int UdpCh1Port = 23410;
-        public const string UdpEndPointAddress = "192.168.1.122";
+        public const string UdpEndPointAddress = "192.168.1.180";
 
         public const UInt16 Noise1Cycle = 10;
         public const UInt16 Noise2Cycle = 10;

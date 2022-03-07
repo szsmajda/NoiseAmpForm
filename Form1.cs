@@ -9,7 +9,6 @@ namespace NoiseAmpControlApp
     public partial class Form1 : Form
     {
         private UdpService _udpService;
-        private UdpClient _udpClient;
         private SerialPortService _serialPortService;
         private int _lineSerialOutputConsole = 0;
         private int _lineCounterOutputConsole = 0;
@@ -19,8 +18,7 @@ namespace NoiseAmpControlApp
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            _udpClient = new UdpClient(Constants.UdpCh1Port);
-            _udpService = new UdpService(Constants.UdpClientPort, _udpClient);
+            _udpService = new UdpService();
             _serialPortService = new SerialPortService();
             Form = this;
             _serialPortService.Start();

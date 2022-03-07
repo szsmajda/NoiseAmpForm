@@ -6,34 +6,36 @@ using System.Text;
 
 namespace NoiseAmpControlApp.Services
 {
-    public class UdpService : UdpClient
+    public class UdpService
     {
         private IPEndPoint _iPEndPoint;
         public string ReceivedString = string.Empty;
         private readonly StreamerService _streamerService;
-        private readonly UdpClient _udpClient;
+        private readonly UdpClient _udpCtrlClient;
+        private readonly UdpClient _udpCh1Client;
         private byte[] _counterBytes;
         private static Stopwatch stopwatch = new Stopwatch();
         
-        public UdpService(int controllPort, UdpClient udpClient) : base(controllPort)
+        public UdpService()
         {
             _streamerService = new StreamerService();
             _iPEndPoint = new IPEndPoint(IPAddress.Parse(Constants.UdpEndPointAddress), Constants.UdpEndPointPort);
-            _udpClient = udpClient;
+            _udpCtrlClient = new UdpClient(Constants.UdpClientPort);
+            _udpCh1Client = new UdpClient(Constants.UdpCh1Port);
             _streamerService.NeedToPlayReached += Ch1SendPackage;
             _streamerService.StopItReached += Ch1SendOff;
-            this.BeginReceive(UdpReceive, null);
+            _udpCtrlClient.BeginReceive(UdpReceive, null);
         }
 
         private void UdpReceive(IAsyncResult res)
         {
-            if (this != null)
+            if (_udpCtrlClient != null)
             {
-                Byte[] receivedUdpbytes = this.EndReceive(res, ref _iPEndPoint);
+                Byte[] receivedUdpbytes = _udpCtrlClient.EndReceive(res, ref _iPEndPoint);
                 ReceivedString = Encoding.ASCII.GetString(receivedUdpbytes);
             }
 
-            this.BeginReceive(new AsyncCallback(UdpReceive), null);
+            _udpCtrlClient.BeginReceive(new AsyncCallback(UdpReceive), null);
         }
 
         public new void Send(SendTypes sendTypes)
@@ -66,7 +68,7 @@ namespace NoiseAmpControlApp.Services
             Array.Copy(_counterBytes, 0, sendBytes, 0, _counterBytes.Length);
             Array.Copy(commandBytes, 0, sendBytes, _counterBytes.Length, commandBytes.Length);
 
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
         }
 
         private void SpeakOut()
@@ -75,14 +77,14 @@ namespace NoiseAmpControlApp.Services
 
             string sendstring = string.Format("{0}{1:D2};", Constants.VolumeFix, NoiseFilter.Vol1);
             var sendBytes = CreateSendBytes(sendstring);
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
 
             while (!ReceivedString.Contains(Constants.Ack)) ;
 
             Form1.Form.UpdateOutputConsole($"Received {Constants.Ack}");
 
             sendBytes = CreateSendBytes(Constants.AllZoneON);
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
 
             Form1.Form.UpdateOutputConsole($"Sent {Constants.AllZoneON}");
 
@@ -104,13 +106,13 @@ namespace NoiseAmpControlApp.Services
         {
             SetCounterBytesAndCommandCounter();
             var sendBytes = CreateSendBytes(Constants.AllZoneOFF);
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
 
             Form1.Form.UpdateOutputConsole($"Sent { Constants.AllZoneOFF}");
 
             SetCounterBytesAndCommandCounter();
             sendBytes = CreateSendBytes(Constants.Stream1Off);
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
         }
 
         private void Ch1SendOn()
@@ -119,14 +121,14 @@ namespace NoiseAmpControlApp.Services
 
             string sendstring = string.Format("{0}{1}{2}", Constants.Stream1OnFix, Constants.MyIP, Constants.Stream1Port);
             var sendBytes = CreateSendBytes(sendstring);
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
         }
 
         private void Ch1SendOff(object sender = null, EventArgs e = null)
         {
             SetCounterBytesAndCommandCounter();
             var sendBytes = CreateSendBytes(Constants.Stream1Off);
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
+            _udpCtrlClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
         }
 
         public void Ch1SendPackage(object sender = null, EventArgs e = null)
@@ -161,7 +163,7 @@ namespace NoiseAmpControlApp.Services
 
             sendBytes = _streamerService.Model.Ch1SendDatagram.ToArray();
 
-            _udpClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpCh1Port);
+            _udpCh1Client.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpCh1Port);
 
             if (_streamerService.Model.Ch1Filended)
             {
