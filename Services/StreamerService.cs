@@ -62,7 +62,7 @@ namespace NoiseAmpControlApp.Services
             if (!Model.Ch1NodataNeeded)
             {
                 Stopwatch watch = new Stopwatch();
-
+                
                 for (int i = 0; i < Model.Ch1Timerpackets; i++)
                 {
                     if (Model.Ch1Needtoplay)

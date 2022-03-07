@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,14 +11,17 @@ namespace NoiseAmpControlApp.Services
         private IPEndPoint _iPEndPoint;
         public string ReceivedString = string.Empty;
         private readonly StreamerService _streamerService;
+        private readonly UdpClient _udpClient;
         private byte[] _counterBytes;
-
-        public UdpService(int udpClientPort, IPEndPoint iPEndPoint) : base(udpClientPort)
+        private static Stopwatch stopwatch = new Stopwatch();
+        
+        public UdpService(int controllPort, UdpClient udpClient) : base(controllPort)
         {
             _streamerService = new StreamerService();
+            _iPEndPoint = new IPEndPoint(IPAddress.Parse(Constants.UdpEndPointAddress), Constants.UdpEndPointPort);
+            _udpClient = udpClient;
             _streamerService.NeedToPlayReached += Ch1SendPackage;
             _streamerService.StopItReached += Ch1SendOff;
-            _iPEndPoint = iPEndPoint;
             this.BeginReceive(UdpReceive, null);
         }
 
@@ -90,6 +94,7 @@ namespace NoiseAmpControlApp.Services
             {
                 Ch1SendPackage();
             }
+
             _streamerService.Model.Ch1NodataNeeded = false;
             _streamerService.StartTimer();
         }
@@ -124,15 +129,24 @@ namespace NoiseAmpControlApp.Services
             base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpEndPointPort);
         }
 
-        private void Ch1SendPackage(object sender = null, EventArgs e = null)
+        public void Ch1SendPackage(object sender = null, EventArgs e = null)
         {
+            if (!stopwatch.IsRunning)
+            {
+                stopwatch.Start();
+            }
+            Debug.WriteLine($"Timer: {stopwatch.ElapsedMilliseconds.ToString()}");
+
             byte[] sendBytes;
             _streamerService.Model.Ch1SendDatagram.Clear();
             for (int z = 0; z < 4; z++) _streamerService.Model.Ch1SendDatagram.AddRange(BitConverter.GetBytes((ushort)0));
 
             for (int i = 0; i < 128; i++)
             {
-                if (_streamerService.Model.Ch1LastSampleSentOut >= _streamerService.Model.Ch1SampleData.Count) _streamerService.Model.Ch1Filended = true;
+                if (_streamerService.Model.Ch1LastSampleSentOut >= _streamerService.Model.Ch1SampleData.Count)
+                {
+                    _streamerService.Model.Ch1Filended = true;
+                }
 
                 if (!_streamerService.Model.Ch1Filended)
                 {
@@ -146,13 +160,16 @@ namespace NoiseAmpControlApp.Services
             }
 
             sendBytes = _streamerService.Model.Ch1SendDatagram.ToArray();
-            base.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpCh1Port);
+
+            _udpClient.Send(sendBytes, sendBytes.Length, Constants.UdpEndPointAddress, Constants.UdpCh1Port);
 
             if (_streamerService.Model.Ch1Filended)
             {
                 Ch1SendOff();
                 _streamerService.Model.Ch1Needtoplay = false;
             }
+
+            stopwatch.Restart();
         }
         private void SetCounterBytesAndCommandCounter()
         {

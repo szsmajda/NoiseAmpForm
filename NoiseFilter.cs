@@ -21,8 +21,6 @@ namespace NoiseAmpControlApp
             _ch3Value = ConvertHextoInt(sourceBytes, 9);
             _ch4Value = ConvertHextoInt(sourceBytes, 13);
 
-            //Debug.WriteLine($"Ch1_value:{_ch1Value,0:D}\tCh2_value:{_ch2Value,0:D}\tCh3_value:{_ch3Value,0:D}\tCh4_value:{_ch4Value,0:D}\n\r\n");
-
             Form1.Form.UpdateSerialConsole($"Ch1_value:{_ch1Value,0:D} Ch2_value:{_ch2Value,0:D} Ch3_value:{_ch3Value,0:D} Ch4_value:{_ch4Value,0:D}");
 
             VolumeController();

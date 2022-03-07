@@ -1,14 +1,15 @@
 ﻿using NoiseAmpControlApp.Services;
 using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace NoiseAmpControlApp
 {
     public partial class Form1 : Form
     {
-        private IPEndPoint _iPEndPoint;
         private UdpService _udpService;
+        private UdpClient _udpClient;
         private SerialPortService _serialPortService;
         private int _lineSerialOutputConsole = 0;
         private int _lineCounterOutputConsole = 0;
@@ -18,8 +19,8 @@ namespace NoiseAmpControlApp
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            _iPEndPoint = new IPEndPoint(IPAddress.Parse(Constants.UdpEndPointAddress), Constants.UdpEndPointPort);
-            _udpService = new UdpService(Constants.UdpClientPort, _iPEndPoint);
+            _udpClient = new UdpClient(Constants.UdpCh1Port);
+            _udpService = new UdpService(Constants.UdpClientPort, _udpClient);
             _serialPortService = new SerialPortService();
             Form = this;
             _serialPortService.Start();
