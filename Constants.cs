@@ -7,7 +7,7 @@ namespace NoiseAmpControlApp
         public const string AudioFile = "test.wav";
 
         public const int BaudRate = 38400;
-        public const string PortName = "COM1";
+        public const string PortName = "COM10";
         public const int UdpClientPort = 9;
         public const int UdpEndPointPort = 9;
         public const int UdpCh1Port = 23410;
@@ -25,7 +25,7 @@ namespace NoiseAmpControlApp
 
         public const UInt16 MinimumNoiseValue = 5;
         public const UInt16 MaximumNoiseValue = 1000;
-        public const byte MinimumVolumeValue = 50;
+        public const byte MinimumVolumeValue = 40;
         public const byte MaximumVolumeValue = 1;
 
         public const int MaxChr = 4;

@@ -17,9 +17,6 @@ namespace NoiseAmpControlApp.Services
         private readonly UdpClient _udpCtrlClient;
         private readonly UdpClient _udpCh1Client;
         private byte[] _counterBytes;
-        private static Stopwatch stopwatch = new Stopwatch();
-
-        public bool KeepaliveButtonisEnabled = false;
 
         public delegate void EnableUI(bool buttonState);
         public event EnableUI SpeakOutEnabled;
@@ -65,8 +62,6 @@ namespace NoiseAmpControlApp.Services
                         if ((byte)(_streamerService.Model.Ch1StreamStatus & 0x07) != _streamerService.Model.Ch1BuffStatus)
                         {
                             _streamerService.Model.Ch1BuffStatus = (byte)(_streamerService.Model.Ch1StreamStatus & 0x07);
-                            //
-                            //CH1_marshalledStatusUpdate(Enum.GetName(typeof(buff_stats), _streamerService.Model.Ch1BuffStatus));
 
                             switch (_streamerService.Model.Ch1BuffStatus)
                             {
@@ -93,18 +88,7 @@ namespace NoiseAmpControlApp.Services
                                     break;
                             }
                         }
-
-                        
-
                     }
-                    
-
-                    //string msg = Encoding.ASCII.GetString(data);
-
-                    
-                    //CH1_marshalledAddNewMessage(msg);
-
-                    // do something with data received from remote
                     _udpCh1Client.BeginReceive(OnCH1_UDPReceive, null);
                 }
             }

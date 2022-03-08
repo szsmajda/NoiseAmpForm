@@ -72,10 +72,5 @@ namespace NoiseAmpControlApp
             _udpService.Send(SendTypes.NoiseMeasure);
             _serialPortService.Start();
         }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }
