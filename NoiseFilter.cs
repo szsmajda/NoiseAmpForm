@@ -16,14 +16,14 @@ namespace NoiseAmpControlApp
         private static UInt16 cyc2 = 0;
         private static UInt16 cyc3 = 0;
         private static UInt16 cyc4 = 0;
-        private static UInt16 _noise1Avg;
-        private static UInt16 _noise2Avg;
-        private static UInt16 _noise3Avg;
-        private static UInt16 _noise4Avg;
-        public static byte Ch1Volume;
-        public static byte Ch2Volume;
-        public static byte Ch3Volume;
-        public static byte Ch4Volume;
+        private static int _noise1Avg;
+        private static int _noise2Avg;
+        private static int _noise3Avg;
+        private static int _noise4Avg;
+        public static int Ch1Volume;
+        public static int Ch2Volume;
+        public static int Ch3Volume;
+        public static int Ch4Volume;
 
         public static void StartCalculation(byte[] sourceBytes)
         {
@@ -42,7 +42,7 @@ namespace NoiseAmpControlApp
             int charValue = 0;
             byte[] charArray = new byte[4];
 
-            for (byte i = 0; i < Constants.MaxChr; i++)
+            for (byte i = 0; i < Constants.NoiseMaxChr; i++)
             {
                 charArray[i] = sourceBytes[i + toIndex];
 
@@ -77,12 +77,8 @@ namespace NoiseAmpControlApp
                 }
                 else
                 {
-                    Ch1Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise1Avg / 20));
+                    Ch1Volume = Constants.MinimumVolumeValue - (_noise1Avg / 20);
                 }
-                //collector1 /= 20;
-                //if (collector1 < 10) { collector1 = 10; }
-                //Ch1Volume = (byte)(63 - collector1);
-                
             }
             else
             {
@@ -105,7 +101,7 @@ namespace NoiseAmpControlApp
                 }
                 else
                 {
-                    Ch2Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise2Avg / 20));
+                    Ch2Volume = Constants.MinimumVolumeValue - (_noise2Avg / 20);
                 }
             }
             else
@@ -129,7 +125,7 @@ namespace NoiseAmpControlApp
                 }
                 else
                 {
-                    Ch3Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise3Avg / 20));
+                    Ch3Volume = Constants.MinimumVolumeValue - (_noise3Avg / 20);
                 }
             }
             else
@@ -153,7 +149,7 @@ namespace NoiseAmpControlApp
                 }
                 else
                 {
-                    Ch4Volume = Convert.ToByte(Constants.MinimumVolumeValue - (_noise4Avg / 20));
+                    Ch4Volume = Constants.MinimumVolumeValue - (_noise4Avg / 20);
                 }
             }
             else

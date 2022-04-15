@@ -18,12 +18,12 @@ namespace NoiseAmpControlApp
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            _udpService = new UdpService();
+            //_udpService = new UdpService();
             _serialPortService = new SerialPortService();
             Form = this;
             _serialPortService.Start();
-
-            _udpService.SpeakOutEnabled += new UdpService.EnableUI(SpeakOutEnableControl);
+            
+            //_udpService.SpeakOutEnabled += new UdpService.EnableUI(SpeakOutEnableControl);
         }
 
         public void SpeakOutEnableControl(bool buttonEnable)
@@ -54,7 +54,7 @@ namespace NoiseAmpControlApp
 
         private void KeepAlive_button_Click(object sender, EventArgs e)
         {
-            _udpService.Send(SendTypes.KeepAlive);
+            //_udpService.Send(SendTypes.KeepAlive);
         }
 
         private void SpeakOut_button_Click(object sender, EventArgs e)
